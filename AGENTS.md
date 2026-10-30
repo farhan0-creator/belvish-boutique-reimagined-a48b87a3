@@ -15,3 +15,6 @@
 - Order tracking uses the SECURITY DEFINER RPC `track_order(order_number, phone)` so orders stay unreadable to the public; newsletter signups are anon INSERT-only.
 - Accounts use Cloud Auth with one root session subscriber; protected pages live under the managed `_authenticated` layout. Profile ownership and separate immutable-to-customers role records are enforced by RLS, so browser state cannot grant privileges.
 - `orders.user_id` is a plain UUID (no FK to auth.users) so guest orders and future imported records stay valid.
+- Admin server functions (`src/lib/admin.functions.ts`) use `requireSupabaseAuth`, then check the designated email claim plus `has_role` before loading the service-role client inside the handler; the browser never decides admin access.
+- Announcement bar and promo banner come from the single-row `store_settings` table (public read, backend-only write), loaded by the root route loader so they render server-side; read them via `useStoreSettings()`.
+- The scroll fade-in only marks elements React has already hydrated, using a `data-reveal` attribute, so it never causes hydration mismatches.
