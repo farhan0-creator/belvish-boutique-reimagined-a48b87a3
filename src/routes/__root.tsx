@@ -20,7 +20,7 @@ import { Header, Footer, CartDrawer } from "@/components/Shell";
 import { WishlistProvider } from "@/lib/wishlist";
 import { ScrollHelpers, WhatsAppFloat } from "@/components/Extras";
 import { Toaster } from "@/components/ui/sonner";
-import { CursorGlow, IntroCurtain, RevealOnScroll } from "@/components/Luxe";
+import { CursorGlow, IntroCurtain, MotionDetails, RevealOnScroll } from "@/components/Luxe";
 import { getStoreSettings } from "@/lib/store-settings.functions";
 
 function NotFoundComponent() {
@@ -163,6 +163,7 @@ function RootComponent() {
           <ScrollHelpers />
           <RevealOnScroll />
           <CursorGlow />
+          <MotionDetails />
           <IntroCurtain />
           <Toaster theme="dark" position="bottom-center" />
         </WishlistProvider>

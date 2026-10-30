@@ -56,6 +56,41 @@ export function RevealOnScroll() {
   return null;
 }
 
+/** Magnetic gold buttons and 3D-tilting product photos (desktop pointer only, after hydration). */
+export function MotionDetails() {
+  useEffect(() => {
+    if (!window.matchMedia("(pointer: fine)").matches || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    let raf = 0;
+    let magnet: HTMLElement | null = null;
+    let tilt: HTMLElement | null = null;
+    const on = (e: PointerEvent) => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const t = e.target instanceof Element ? e.target : null;
+        const m = t?.closest<HTMLElement>(".btn-gold, .btn-ghost-gold") ?? null;
+        if (m !== magnet) { magnet?.style.removeProperty("translate"); magnet = m; }
+        if (m) {
+          const r = m.getBoundingClientRect();
+          m.style.translate = `${((e.clientX - r.left) / r.width - 0.5) * 10}px ${((e.clientY - r.top) / r.height - 0.5) * 8}px`;
+        }
+        const c = t?.closest<HTMLElement>(".lux-shine") ?? null;
+        if (c !== tilt) { tilt?.style.removeProperty("transform"); tilt = c; }
+        if (c) {
+          const r = c.getBoundingClientRect();
+          const px = (e.clientX - r.left) / r.width;
+          const py = (e.clientY - r.top) / r.height;
+          c.style.transform = `perspective(1000px) rotateX(${(0.5 - py) * 6}deg) rotateY(${(px - 0.5) * 6}deg)`;
+          c.style.setProperty("--mx", `${px * 100}%`);
+          c.style.setProperty("--my", `${py * 100}%`);
+        }
+      });
+    };
+    window.addEventListener("pointermove", on, { passive: true });
+    return () => { window.removeEventListener("pointermove", on); cancelAnimationFrame(raf); };
+  }, []);
+  return null;
+}
+
 /** Soft champagne light that follows the pointer on desktop. */
 export function CursorGlow() {
   const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
