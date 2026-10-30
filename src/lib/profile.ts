@@ -6,7 +6,7 @@ export type SavedAddress = { line: string; city: string; state: string; pincode:
 export function readAddress(raw: unknown): SavedAddress {
   const o = raw && typeof raw === "object" && !Array.isArray(raw) ? (raw as Record<string, unknown>) : {};
   const str = (v: unknown) => (typeof v === "string" ? v : "");
-  return { line: str(o.line), city: str(o.city), state: str(o.state), pincode: str(o.pincode) };
+  return { line: str(o["line"]), city: str(o["city"]), state: str(o["state"]), pincode: str(o["pincode"]) };
 }
 
 /** Profile edits: every field optional (empty allowed) but valid when filled. */

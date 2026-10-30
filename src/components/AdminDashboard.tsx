@@ -72,7 +72,7 @@ function OrdersTable() {
     setSaving(orderId);
     try {
       await setStatus({ data: { orderId, status } });
-      toast.success(`Order marked ${STATUS_LABEL[status].toLowerCase()}.`);
+      toast.success(`Order marked ${(STATUS_LABEL[status] ?? status).toLowerCase()}.`);
       await queryClient.invalidateQueries({ queryKey: ["admin"] });
     } catch {
       toast.error("Couldn't update the order. Please try again.");
