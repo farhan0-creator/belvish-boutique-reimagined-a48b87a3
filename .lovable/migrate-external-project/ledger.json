@@ -1,0 +1,21 @@
+{
+  "source": "code-archive",
+  "archive": "belvish-archive-to-adventure-main.zip",
+  "notes": "Source is a Lovable TanStack Start storefront (BELVISH) previously backed by a different Lovable Cloud project. No record or user exports were attached.",
+  "capabilities": [
+    {"capability": "code", "source": "TanStack Start app (routes, components, lib)", "outcome": "migrate", "status": "pending", "next_action": "copy source into project"},
+    {"capability": "assets", "source": "src/assets (3 bundled jpgs + 12 CDN pointers from old project)", "outcome": "migrate", "status": "pending", "next_action": "re-upload CDN media under this project"},
+    {"capability": "schema", "source": "supabase/migrations/20261028150353_0000_full_schema.sql (orders, newsletter_subscribers, profiles, user_roles, track_order, has_role, profile trigger, admin assignment)", "outcome": "migrate", "status": "pending", "next_action": "apply migration in Lovable Cloud"},
+    {"capability": "records", "source": "previous Lovable Cloud database: orders, newsletter_subscribers, profiles (no export attached)", "outcome": "migrate", "status": "pending", "next_action": "user to supply CSV exports or skip"},
+    {"capability": "auth_identities", "source": "previous Lovable Cloud auth users (no export attached)", "outcome": "migrate", "status": "pending", "next_action": "user to supply user export (email, original id); import with first-login verification + new password"},
+    {"capability": "authorization", "source": "RLS on orders/profiles/user_roles, has_role, backend-only admin assignment", "outcome": "migrate", "status": "pending", "next_action": "apply with schema; run account-security checks"},
+    {"capability": "admin_role", "source": "assign_verified_belvish_admin() for designated email", "outcome": "migrate", "status": "pending", "next_action": "owner registers + verifies email, then backend assignment"},
+    {"capability": "uploaded_file_bytes", "source": "none (no storage buckets)", "outcome": "not_applicable", "status": "verified", "next_action": "none"},
+    {"capability": "external_providers", "source": "none (Cash on Delivery only, no Stripe/email/AI)", "outcome": "not_applicable", "status": "verified", "next_action": "none"},
+    {"capability": "public_endpoints", "source": "none (no src/routes/api)", "outcome": "not_applicable", "status": "verified", "next_action": "none"},
+    {"capability": "schedules", "source": "cron-auth helper present but unused", "outcome": "not_applicable", "status": "verified", "next_action": "none"},
+    {"capability": "secrets", "source": "only managed backend variables", "outcome": "not_applicable", "status": "verified", "next_action": "none"},
+    {"capability": "cutover", "source": "old published site belvish-scent-discovery.lovable.app", "outcome": "migrate", "status": "pending", "next_action": "publish this project and point domain when ready"},
+    {"capability": "verification", "source": "build, routes, checkout, track order, newsletter, auth screens", "outcome": "migrate", "status": "pending", "next_action": "run after migration"}
+  ]
+}

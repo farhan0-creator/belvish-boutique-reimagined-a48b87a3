@@ -8,10 +8,19 @@ import {
   Scripts,
   type ErrorComponentProps,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
+import type { User } from '@supabase/supabase-js';
+import { supabase } from '@/integrations/supabase/client';
+import { AuthContext } from '@/lib/auth';
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { CartProvider } from "@/lib/cart";
+import { Header, Footer, CartDrawer } from "@/components/Shell";
+import { WishlistProvider } from "@/lib/wishlist";
+import { ScrollHelpers, WhatsAppFloat } from "@/components/Extras";
+import { Toaster } from "@/components/ui/sonner";
+import { CursorGlow, IntroCurtain, RevealOnScroll } from "@/components/Luxe";
 
 function NotFoundComponent() {
   return (
@@ -78,20 +87,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "BELVISH Fragrance" },
+      { name: "description", content: "A considered fragrance counter for the curious." },
+      { property: "og:title", content: "BELVISH Fragrance" },
+      { property: "og:description", content: "A considered fragrance counter for the curious." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Karla:wght@400;500&display=swap" },
+      { rel: "stylesheet", href: appCss },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
   }),
@@ -117,11 +124,46 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const router = useRouter();
+  const [user, setUser] = useState<User | null>(null);
+  const [recovery, setRecovery] = useState(false);
+  useEffect(() => {
+    let active = true;
+    let generation = 0;
+    const refresh = async () => {
+      const current = ++generation;
+      const { data } = await supabase.auth.getUser();
+      if (active && current === generation) setUser(data.user);
+    };
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'PASSWORD_RECOVERY') { setRecovery(true); queueMicrotask(() => { void refresh(); }); return; }
+      if (event !== 'SIGNED_IN' && event !== 'SIGNED_OUT' && event !== 'USER_UPDATED') return;
+      if (event === 'SIGNED_OUT') { ++generation; setUser(null); setRecovery(false); }
+      else queueMicrotask(() => { void refresh(); });
+      queueMicrotask(() => { if (active) { void router.invalidate(); if (event !== 'SIGNED_OUT') void queryClient.invalidateQueries(); } });
+    });
+    void refresh();
+    return () => { active = false; subscription.unsubscribe(); };
+  }, [router, queryClient]);
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <AuthContext.Provider value={{ user, recovery }}>
+      <CartProvider>
+        <WishlistProvider>
+          <Header />
+          <Outlet />
+          <Footer />
+          <CartDrawer />
+          <WhatsAppFloat />
+          <ScrollHelpers />
+          <RevealOnScroll />
+          <CursorGlow />
+          <IntroCurtain />
+          <Toaster theme="dark" position="bottom-center" />
+        </WishlistProvider>
+      </CartProvider>
+      </AuthContext.Provider>
     </QueryClientProvider>
   );
 }
