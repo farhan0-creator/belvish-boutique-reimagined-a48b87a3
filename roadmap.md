@@ -1,0 +1,15 @@
+# Roadmap
+- [x] Move store into this project with its own Lovable Cloud backend (pages, media, database, security checks, checkout/track/newsletter verified)
+- [ ] Import existing orders, newsletter signups and customer accounts — waiting on exports from the old project (or "skip")
+- [x] Email account screens, private profiles, and backend-only administrator assignment added; signed-out checks passed.
+- [ ] Verify successful sign-up/login/logout/password recovery and private profile access — blocked until the owner creates and confirms a real account (no fake records permitted).
+- [ ] Activate designated administrator role — blocked until the owner confirms the designated email; assignment must run through trusted backend access, not public signup.
+- [ ] Customer saved-address editor and order history — deferred pending additional credit approval.
+- [ ] Admin customer/order dashboard, search, totals, and fulfillment updates — deferred pending additional credit approval.
+- [x] Rebuild BELVISH showcase (families, finder, catalog, product pages, demo bag)
+- [x] Ultra-luxury editorial restyle
+- [x] Expand catalog with niche / haute perfumery
+- [x] New high-resolution luxury perfume imagery
+- Demo only: no real payments or external store
+- [x] Rounded, softer shape across the store (buttons, photos, cards, menu, bag, footer)
+- [x] Quick add-to-bag, delivery-date estimate, share, recently viewed, back-to-top, saved-to-wishlist notices

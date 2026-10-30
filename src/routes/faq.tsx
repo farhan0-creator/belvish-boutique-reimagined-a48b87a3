@@ -1,0 +1,46 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { CONTACT } from "@/lib/contact";
+import { Eyebrow } from "@/components/Shell";
+
+export const Route = createFileRoute("/faq")({
+  head: () => ({
+    meta: [
+      { title: "Delivery, Cash on Delivery & FAQs — BELVISH" },
+      { name: "description", content: "Answers about BELVISH delivery, Cash on Delivery, authenticity, gift wrapping and order tracking." },
+      { property: "og:title", content: "FAQs — BELVISH" },
+      { property: "og:description", content: "Delivery, Cash on Delivery, authenticity and more." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
+  component: Faq,
+});
+
+const faqs = [
+  { q: "How does Cash on Delivery work?", a: "Place your order online with your delivery details. When it arrives, pay the delivery partner in cash. There's no extra fee for Cash on Delivery." },
+  { q: "Is delivery really free?", a: "Yes — delivery is free on every order, anywhere in India." },
+  { q: "How long will my order take?", a: "We dispatch within 24–48 hours. Most orders arrive within 3–6 working days, depending on your city." },
+  { q: "How do I track my order?", a: "Use the Track order page with the order number from your confirmation and the mobile number you used at checkout." },
+  { q: "Are your fragrances authentic?", a: "Every bottle is factory-sealed and sourced directly from the houses we carry. We never sell decants, testers or grey-market stock." },
+  { q: "Do you gift wrap?", a: "Every order arrives in our black-and-gold keepsake box. Add a gift message in the delivery notes at checkout and we'll handwrite it." },
+  { q: "Can I change or cancel my order?", a: `Yes, before it ships. Message us on WhatsApp or call ${CONTACT.phoneDisplay} with your order number.` },
+];
+
+function Faq() {
+  return (
+    <main className="mx-auto max-w-3xl px-6 py-16">
+      <Eyebrow>Good to know</Eyebrow>
+      <h1 className="mt-4 font-display text-6xl font-light">Questions, <em>answered.</em></h1>
+      <Accordion type="single" collapsible className="mt-12">
+        {faqs.map((f, i) => (
+          <AccordionItem key={f.q} value={`q${i}`}>
+            <AccordionTrigger className="font-display text-xl hover:no-underline">{f.q}</AccordionTrigger>
+            <AccordionContent className="text-base text-muted-foreground">{f.a}</AccordionContent>
+          </AccordionItem>
+        ))}
+      </Accordion>
+      <p className="mt-12 text-muted-foreground">Still curious? <Link to="/contact" className="text-accent underline underline-offset-4">Contact us</Link> — we're open {CONTACT.hours}.</p>
+    </main>
+  );
+}
