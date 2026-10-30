@@ -3,9 +3,10 @@
 - [ ] Import existing orders, newsletter signups and customer accounts — waiting on exports from the old project (or "skip")
 - [x] Email account screens, private profiles, and backend-only administrator assignment added; signed-out checks passed.
 - [ ] Verify successful sign-up/login/logout/password recovery and private profile access — blocked until the owner creates and confirms a real account (no fake records permitted).
-- [ ] Activate designated administrator role — blocked until the owner confirms the designated email; assignment must run through trusted backend access, not public signup.
-- [ ] Customer saved-address editor and order history — deferred pending additional credit approval.
-- [ ] Admin customer/order dashboard, search, totals, and fulfillment updates — deferred pending additional credit approval.
+- [ ] Activate administrator role — automatic once zacian061@gmail.com signs up and verifies the email (waiting on the owner)
+- [x] My Account: editable name/phone/default address, My Orders with live status; Track Order removed from nav/footer
+- [x] Admin dashboard on /account: metrics, all orders with status control, announcement bar + promo banner manager, newsletter list
+- [x] Fixed page-load warning on every page (scroll fade-in)
 - [x] Rebuild BELVISH showcase (families, finder, catalog, product pages, demo bag)
 - [x] Ultra-luxury editorial restyle
 - [x] Expand catalog with niche / haute perfumery
