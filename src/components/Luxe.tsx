@@ -102,7 +102,7 @@ export function LuxeSeals() {
   return (
     <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
       {SEALS.map(([k, v]) => (
-        <div key={k} className="rounded-2xl border border-border p-4 text-center">
+        <div key={v} className="rounded-2xl border border-border p-4 text-center">
           <p className="font-display text-2xl text-gold-gradient">{k}</p>
           <p className="mt-1 text-[10px] uppercase tracking-[0.2em] text-muted-foreground">{v}</p>
         </div>
