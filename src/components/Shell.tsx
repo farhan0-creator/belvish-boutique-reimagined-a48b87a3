@@ -151,7 +151,7 @@ export function Footer() {
         <div>
           <p className="text-xs uppercase tracking-[0.3em] text-accent">Help</p>
           <ul className="mt-5 space-y-3 text-sm text-muted-foreground">
-            <li><Link to="/track" className="hover:text-foreground">Track your order</Link></li>
+            <li><Link to="/account" className="hover:text-foreground">My account &amp; orders</Link></li>
             <li><Link to="/faq" className="hover:text-foreground">Delivery &amp; FAQs</Link></li>
             <li><Link to="/contact" className="hover:text-foreground">Contact us</Link></li>
             <li>Cash on Delivery · Free delivery</li>
