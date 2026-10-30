@@ -1,4 +1,6 @@
 # Roadmap
+- [x] Move store into this project with its own Lovable Cloud backend (pages, media, database, security checks, checkout/track/newsletter verified)
+- [ ] Import existing orders, newsletter signups and customer accounts — waiting on exports from the old project (or "skip")
 - [x] Email account screens, private profiles, and backend-only administrator assignment added; signed-out checks passed.
 - [ ] Verify successful sign-up/login/logout/password recovery and private profile access — blocked until the owner creates and confirms a real account (no fake records permitted).
 - [ ] Activate designated administrator role — blocked until the owner confirms the designated email; assignment must run through trusted backend access, not public signup.
