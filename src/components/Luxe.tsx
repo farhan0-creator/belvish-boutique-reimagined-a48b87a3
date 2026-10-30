@@ -30,12 +30,13 @@ export function RevealOnScroll() {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const els = Array.from(document.querySelectorAll<HTMLElement>("main section, main > div > section, footer"));
     const io = new IntersectionObserver((entries) => {
-      entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("is-in"); io.unobserve(e.target); } });
+      entries.forEach((e) => { if (e.isIntersecting) { e.target.setAttribute("data-reveal", "in"); io.unobserve(e.target); } });
     }, { threshold: 0.08, rootMargin: "0px 0px -40px 0px" });
     els.forEach((el) => {
       const r = el.getBoundingClientRect();
       if (r.top < window.innerHeight) return;
-      el.classList.add("lux-reveal");
+      // A data attribute (not className) so React hydration never sees a mismatch.
+      el.setAttribute("data-reveal", "");
       io.observe(el);
     });
     return () => io.disconnect();
