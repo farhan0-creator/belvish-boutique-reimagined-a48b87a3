@@ -3,7 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState, type FormEvent } from "react";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
-import { readAddress } from "@/lib/profile";
+import { INDIAN_STATES as STATES, readAddress } from "@/lib/profile";
 import { Banknote, CheckCircle2, Loader2, ShieldCheck, Truck } from "lucide-react";
 import { useCart } from "@/lib/cart";
 import { formatINR } from "@/lib/catalog";
@@ -26,7 +26,6 @@ export const Route = createFileRoute("/checkout")({
   component: Checkout,
 });
 
-export const STATES = ["Andhra Pradesh","Arunachal Pradesh","Assam","Bihar","Chhattisgarh","Goa","Gujarat","Haryana","Himachal Pradesh","Jharkhand","Karnataka","Kerala","Madhya Pradesh","Maharashtra","Manipur","Meghalaya","Mizoram","Nagaland","Odisha","Punjab","Rajasthan","Sikkim","Tamil Nadu","Telangana","Tripura","Uttar Pradesh","Uttarakhand","West Bengal","Andaman and Nicobar Islands","Chandigarh","Dadra and Nagar Haveli and Daman and Diu","Delhi","Jammu and Kashmir","Ladakh","Lakshadweep","Puducherry"];
 
 const empty = { customerName: "", phone: "", email: "", addressLine: "", city: "", state: "", pincode: "", notes: "" };
 type Form = typeof empty;
