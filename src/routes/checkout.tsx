@@ -1,6 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
+import { useAuth } from "@/lib/auth";
+import { supabase } from "@/integrations/supabase/client";
+import { readAddress } from "@/lib/profile";
 import { Banknote, CheckCircle2, Loader2, ShieldCheck, Truck } from "lucide-react";
 import { useCart } from "@/lib/cart";
 import { formatINR } from "@/lib/catalog";
@@ -23,7 +26,7 @@ export const Route = createFileRoute("/checkout")({
   component: Checkout,
 });
 
-const STATES = ["Andhra Pradesh","Arunachal Pradesh","Assam","Bihar","Chhattisgarh","Goa","Gujarat","Haryana","Himachal Pradesh","Jharkhand","Karnataka","Kerala","Madhya Pradesh","Maharashtra","Manipur","Meghalaya","Mizoram","Nagaland","Odisha","Punjab","Rajasthan","Sikkim","Tamil Nadu","Telangana","Tripura","Uttar Pradesh","Uttarakhand","West Bengal","Andaman and Nicobar Islands","Chandigarh","Dadra and Nagar Haveli and Daman and Diu","Delhi","Jammu and Kashmir","Ladakh","Lakshadweep","Puducherry"];
+export const STATES = ["Andhra Pradesh","Arunachal Pradesh","Assam","Bihar","Chhattisgarh","Goa","Gujarat","Haryana","Himachal Pradesh","Jharkhand","Karnataka","Kerala","Madhya Pradesh","Maharashtra","Manipur","Meghalaya","Mizoram","Nagaland","Odisha","Punjab","Rajasthan","Sikkim","Tamil Nadu","Telangana","Tripura","Uttar Pradesh","Uttarakhand","West Bengal","Andaman and Nicobar Islands","Chandigarh","Dadra and Nagar Haveli and Daman and Diu","Delhi","Jammu and Kashmir","Ladakh","Lakshadweep","Puducherry"];
 
 const empty = { customerName: "", phone: "", email: "", addressLine: "", city: "", state: "", pincode: "", notes: "" };
 type Form = typeof empty;
@@ -36,6 +39,24 @@ function Checkout() {
   const [busy, setBusy] = useState(false);
   const [failure, setFailure] = useState("");
   const [done, setDone] = useState<{ orderNumber: string; total: number; name: string } | null>(null);
+  const { user } = useAuth();
+
+  // Signed-in customers start from their saved details; anything already typed is kept.
+  useEffect(() => {
+    if (!user) return;
+    let active = true;
+    void supabase.from("profiles").select("name, phone, shipping_address").eq("id", user.id).maybeSingle().then(({ data }) => {
+      if (!active || !data) return;
+      const a = readAddress(data.shipping_address);
+      const saved: Partial<Form> = { customerName: data.name, phone: data.phone, email: user.email ?? "", addressLine: a.line, city: a.city, state: a.state, pincode: a.pincode };
+      setForm((f) => {
+        const next = { ...f };
+        for (const [k, v] of Object.entries(saved) as [keyof Form, string][]) if (!next[k] && v) next[k] = v;
+        return next;
+      });
+    });
+    return () => { active = false; };
+  }, [user]);
 
   const set = (k: keyof Form) => (e: { target: { value: string } }) => {
     setForm((f) => ({ ...f, [k]: e.target.value }));
@@ -81,7 +102,7 @@ function Checkout() {
         </div>
         <div className="mt-10 flex flex-wrap justify-center gap-4">
           <a href={whatsappLink(`Hi BELVISH, I just placed order ${done.orderNumber} (Cash on Delivery).`)} target="_blank" rel="noopener noreferrer" className="btn-gold">Confirm on WhatsApp</a>
-          <Link to="/track" className="btn-ghost-gold">Track this order</Link>
+          {user ? <Link to="/account" className="btn-ghost-gold">View in My Account</Link> : <Link to="/track" className="btn-ghost-gold">Track this order</Link>}
         </div>
         <Link to="/shop" className="mt-6 inline-block text-xs uppercase tracking-[0.2em] text-muted-foreground underline underline-offset-8">Continue shopping</Link>
       </main>
