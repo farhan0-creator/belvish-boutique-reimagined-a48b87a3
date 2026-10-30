@@ -21,7 +21,7 @@ const faqs = [
   { q: "How does Cash on Delivery work?", a: "Place your order online with your delivery details. When it arrives, pay the delivery partner in cash. There's no extra fee for Cash on Delivery." },
   { q: "Is delivery really free?", a: "Yes — delivery is free on every order, anywhere in India." },
   { q: "How long will my order take?", a: "We dispatch within 24–48 hours. Most orders arrive within 3–6 working days, depending on your city." },
-  { q: "How do I track my order?", a: "Use the Track order page with the order number from your confirmation and the mobile number you used at checkout." },
+  { q: "How do I track my order?", a: "Sign in and open My Account to see the live status of every order you placed while signed in. Guest orders can be tracked with the order number from your confirmation and the mobile number you used at checkout." },
   { q: "Are your fragrances authentic?", a: "Every bottle is factory-sealed and sourced directly from the houses we carry. We never sell decants, testers or grey-market stock." },
   { q: "Do you gift wrap?", a: "Every order arrives in our black-and-gold keepsake box. Add a gift message in the delivery notes at checkout and we'll handwrite it." },
   { q: "Can I change or cancel my order?", a: `Yes, before it ships. Message us on WhatsApp or call ${CONTACT.phoneDisplay} with your order number.` },

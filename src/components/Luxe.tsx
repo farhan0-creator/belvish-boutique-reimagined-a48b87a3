@@ -23,22 +23,35 @@ export function IntroCurtain() {
   );
 }
 
+/** True once React has hydrated this element (lazy page content hydrates after the shell). */
+const isHydrated = (el: Element) => Object.keys(el).some((k) => k.startsWith("__reactFiber"));
+
 /** Fades sections up as they scroll into view. Content stays visible without JS. */
 export function RevealOnScroll() {
   const path = useRouterState({ select: (s) => s.location.pathname });
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const els = Array.from(document.querySelectorAll<HTMLElement>("main section, main > div > section, footer"));
     const io = new IntersectionObserver((entries) => {
-      entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("is-in"); io.unobserve(e.target); } });
+      entries.forEach((e) => { if (e.isIntersecting) { e.target.setAttribute("data-reveal", "in"); io.unobserve(e.target); } });
     }, { threshold: 0.08, rootMargin: "0px 0px -40px 0px" });
-    els.forEach((el) => {
-      const r = el.getBoundingClientRect();
-      if (r.top < window.innerHeight) return;
-      el.classList.add("lux-reveal");
-      io.observe(el);
-    });
-    return () => io.disconnect();
+    const seen = new WeakSet<Element>();
+    let tries = 0;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    // Only touch elements React has already hydrated; otherwise hydration reports a mismatch.
+    const scan = () => {
+      let pending = false;
+      document.querySelectorAll<HTMLElement>("main section, main > div > section, footer").forEach((el) => {
+        if (seen.has(el)) return;
+        if (!isHydrated(el)) { pending = true; return; }
+        seen.add(el);
+        if (el.getBoundingClientRect().top < window.innerHeight) return;
+        el.setAttribute("data-reveal", "");
+        io.observe(el);
+      });
+      if (pending && ++tries < 40) timer = setTimeout(scan, 100);
+    };
+    scan();
+    return () => { io.disconnect(); if (timer) clearTimeout(timer); };
   }, [path]);
   return null;
 }

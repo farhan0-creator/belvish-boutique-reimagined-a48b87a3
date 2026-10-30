@@ -9,7 +9,7 @@ import ingredients from "@/assets/ingredients.jpg";
 import ritual from "@/assets/ritual.jpg";
 import atelierVideoAsset from "@/assets/belvish-atelier-move.mp4.asset.json";
 import { families, houses, products } from "@/lib/catalog";
-import { Eyebrow, ProductCard, PromiseStrip } from "@/components/Shell";
+import { Eyebrow, ProductCard, PromiseStrip, PromoBanner } from "@/components/Shell";
 import { Finder } from "@/components/Finder";
 
 const hero = heroAsset.url;
@@ -74,6 +74,7 @@ function Home() {
       </section>
 
       <PromiseStrip />
+      <PromoBanner />
 
       {/* Houses marquee */}
       <section className="overflow-hidden border-b border-border py-8">

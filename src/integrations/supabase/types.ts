@@ -103,19 +103,55 @@ export type Database = {
           created_at: string
           id: string
           name: string
+          phone: string
           shipping_address: Json
         }
         Insert: {
           created_at?: string
           id: string
           name?: string
+          phone?: string
           shipping_address?: Json
         }
         Update: {
           created_at?: string
           id?: string
           name?: string
+          phone?: string
           shipping_address?: Json
+        }
+        Relationships: []
+      }
+      store_settings: {
+        Row: {
+          announcement_enabled: boolean
+          announcement_link: string
+          announcement_text: string
+          id: number
+          promo_code: string
+          promo_enabled: boolean
+          promo_text: string
+          updated_at: string
+        }
+        Insert: {
+          announcement_enabled?: boolean
+          announcement_link?: string
+          announcement_text?: string
+          id?: number
+          promo_code?: string
+          promo_enabled?: boolean
+          promo_text?: string
+          updated_at?: string
+        }
+        Update: {
+          announcement_enabled?: boolean
+          announcement_link?: string
+          announcement_text?: string
+          id?: number
+          promo_code?: string
+          promo_enabled?: boolean
+          promo_text?: string
+          updated_at?: string
         }
         Relationships: []
       }

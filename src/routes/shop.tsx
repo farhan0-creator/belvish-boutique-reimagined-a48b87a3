@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import { families, products } from "@/lib/catalog";
-import { Eyebrow, ProductCard } from "@/components/Shell";
+import { Eyebrow, ProductCard, PromoBanner } from "@/components/Shell";
 
 export const Route = createFileRoute("/shop")({
   validateSearch: (s: Record<string, unknown>): { family?: string | undefined } => ({ family: typeof s["family"] === "string" ? s["family"] : undefined }),
@@ -39,6 +39,7 @@ function Shop() {
     <main className="mx-auto max-w-7xl px-6 py-16">
       <Eyebrow>The considered edit</Eyebrow>
       <h1 className="mt-4 font-display text-6xl">The full <em>edit.</em></h1>
+      <div className="-mx-6"><PromoBanner /></div>
       <div className="mt-10 flex flex-wrap gap-2">
         <Link to="/shop" search={{}} className={tab(undefined)}>All</Link>
         {families.map((f) => <Link key={f.name} to="/shop" search={{ family: f.name }} className={tab(f.name)}>{f.name}</Link>)}

@@ -21,6 +21,7 @@ import { WishlistProvider } from "@/lib/wishlist";
 import { ScrollHelpers, WhatsAppFloat } from "@/components/Extras";
 import { Toaster } from "@/components/ui/sonner";
 import { CursorGlow, IntroCurtain, RevealOnScroll } from "@/components/Luxe";
+import { getStoreSettings } from "@/lib/store-settings.functions";
 
 function NotFoundComponent() {
   return (
@@ -83,6 +84,9 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+  // Announcement bar + promo banner, rendered on the server so there's no flicker.
+  loader: () => getStoreSettings(),
+  staleTime: 60_000,
   head: () => ({
     meta: [
       { charSet: "utf-8" },
