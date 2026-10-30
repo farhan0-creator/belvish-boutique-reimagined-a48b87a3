@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, rootRouteId, useLoaderData } from "@tanstack/react-router";
 import { useState } from "react";
 import { Banknote, Gift, Heart, Menu, Minus, Plus, ShieldCheck, ShoppingBag, Truck, X } from "lucide-react";
 import { useCart } from "@/lib/cart";
@@ -8,14 +8,53 @@ import { CONTACT, whatsappLink } from "@/lib/contact";
 import { Newsletter, WishButton } from "@/components/Extras";
 import { useAuth } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
+import { DEFAULT_STORE_SETTINGS, safeAnnouncementHref } from "@/lib/store-settings.functions";
 
 const nav = [
   { to: "/shop", label: "The edit" },
   { to: "/families", label: "Scent families" },
   { to: "/finder", label: "Fragrance finder" },
-  { to: "/track", label: "Track order" },
   { to: "/contact", label: "Contact" },
 ] as const;
+
+export function useStoreSettings() {
+  return useLoaderData({ from: rootRouteId }) ?? DEFAULT_STORE_SETTINGS;
+}
+
+function AnnouncementBar() {
+  const s = useStoreSettings();
+  if (!s.announcement_enabled || !s.announcement_text.trim()) return null;
+  const href = safeAnnouncementHref(s.announcement_link);
+  const text = s.announcement_text;
+  return (
+    <div className="relative z-40 border-b border-border bg-secondary text-center text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+      <p className="px-4 py-2">
+        {href ? (
+          href.startsWith("/") ? <a href={href} className="transition-colors hover:text-accent">{text}</a>
+            : <a href={href} target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-accent">{text}</a>
+        ) : text}
+      </p>
+    </div>
+  );
+}
+
+/** Admin-managed promotional banner with optional coupon code. Hidden when switched off. */
+export function PromoBanner() {
+  const s = useStoreSettings();
+  if (!s.promo_enabled || (!s.promo_text.trim() && !s.promo_code.trim())) return null;
+  return (
+    <div className="px-6 py-6">
+      <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 rounded-[2rem] border border-primary/40 bg-card px-8 py-6 text-center sm:flex-row sm:text-left">
+        <p className="font-display text-2xl font-light">{s.promo_text}</p>
+        {s.promo_code.trim() && (
+          <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
+            Use code <span className="ml-2 rounded-full border border-primary px-4 py-2 text-sm tracking-[0.25em] text-gold-gradient">{s.promo_code}</span>
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
 
 export function Header() {
   const { count, setOpen } = useCart();
@@ -23,9 +62,7 @@ export function Header() {
   const [menu, setMenu] = useState(false);
   return (
     <>
-      <div className="relative z-40 border-b border-border bg-secondary text-center text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
-        <p className="px-4 py-2">Free delivery across India · <span className="text-accent">Cash on Delivery</span> available</p>
-      </div>
+      <AnnouncementBar />
       <header className="sticky top-0 z-30 px-3 pt-3">
         <div className="mx-auto flex max-w-7xl items-center justify-between rounded-full border border-border bg-background/75 px-6 py-3 shadow-lg backdrop-blur-md">
           <button className="md:hidden" onClick={() => setMenu(!menu)} aria-label="Menu">
