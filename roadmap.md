@@ -15,3 +15,4 @@
 - [x] Rounded, softer shape across the store (buttons, photos, cards, menu, bag, footer)
 - [x] Quick add-to-bag, delivery-date estimate, share, recently viewed, back-to-top, saved-to-wishlist notices
 - [x] Cinematic scroll animations (parallax, headline unveil, card cascade), page fades, magnetic buttons, tilting photos
+- [x] Google sign-in for customers on the login and sign-up page
