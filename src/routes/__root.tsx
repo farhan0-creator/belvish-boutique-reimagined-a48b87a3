@@ -22,6 +22,7 @@ import { ScrollHelpers, WhatsAppFloat } from "@/components/Extras";
 import { Toaster } from "@/components/ui/sonner";
 import { CursorGlow, IntroCurtain, MotionDetails, RevealOnScroll } from "@/components/Luxe";
 import { getStoreSettings } from "@/lib/store-settings.functions";
+import { PopupAd } from "@/components/PopupAd";
 
 function NotFoundComponent() {
   return (
@@ -164,6 +165,7 @@ function RootComponent() {
           <RevealOnScroll />
           <CursorGlow />
           <MotionDetails />
+          <PopupAd />
           <IntroCurtain />
           <Toaster theme="dark" position="bottom-center" />
         </WishlistProvider>

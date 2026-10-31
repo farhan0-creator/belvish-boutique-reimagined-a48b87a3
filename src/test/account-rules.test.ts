@@ -30,3 +30,26 @@ describe("Announcement link rules", () => {
     expect(safeAnnouncementHref("//evil.example")).toBeNull();
   });
 });
+
+describe("Pop-up ad rules", async () => {
+  const { storeSettingsSchema } = await import("@/lib/admin.functions");
+  const { DEFAULT_STORE_SETTINGS } = await import("@/lib/store-settings.functions");
+  const { popup_image_src: _src, ...base } = DEFAULT_STORE_SETTINGS;
+  const ad = { ...base, popup_enabled: true, popup_title: "Diwali edit" };
+
+  it("accepts an ad with an uploaded image and a 0–60 second delay", () => {
+    expect(storeSettingsSchema.safeParse({ ...ad, popup_image_url: "popup-ads/123-abc.jpg", popup_delay_seconds: 60 }).success).toBe(true);
+  });
+  it("rejects a delay over 60 seconds", () => {
+    expect(storeSettingsSchema.safeParse({ ...ad, popup_delay_seconds: 61 }).success).toBe(false);
+  });
+  it("rejects an unsafe button link", () => {
+    expect(storeSettingsSchema.safeParse({ ...ad, popup_button_link: "javascript:alert(1)" }).success).toBe(false);
+  });
+  it("rejects an image that is not an upload or https link", () => {
+    expect(storeSettingsSchema.safeParse({ ...ad, popup_image_url: "http://example.com/a.jpg" }).success).toBe(false);
+  });
+  it("won't switch the pop-up on with nothing in it", () => {
+    expect(storeSettingsSchema.safeParse({ ...ad, popup_title: "" }).success).toBe(false);
+  });
+});
