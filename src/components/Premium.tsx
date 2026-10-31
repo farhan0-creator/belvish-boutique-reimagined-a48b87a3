@@ -33,7 +33,7 @@ export function SearchPalette() {
           <CommandEmpty>Nothing matches. Try a single note like “jasmine”.</CommandEmpty>
           <CommandGroup heading="Fragrances">
             {products.map((p) => (
-              <CommandItem key={p.slug} value={`${p.name} ${p.house} ${p.notes.join(" ")} ${p.tags.join(" ")}`} onSelect={() => go(() => navigate({ to: "/product/$slug", params: { slug: p.slug } }))} className="gap-4">
+              <CommandItem key={p.slug} value={`${p.name} ${p.house} ${p.notes.join(" ")} ${p.tags.join(" ")}`} onSelect={() => go(() => navigate({ to: "/product/$slug", params: { slug: p.slug } }))} className="gap-4 [&[data-selected=true]_*]:!text-accent-foreground">
                 <img src={p.images[0]} alt="" className="h-12 w-12 rounded-xl object-cover" />
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-display text-lg leading-tight">{p.name}</p>

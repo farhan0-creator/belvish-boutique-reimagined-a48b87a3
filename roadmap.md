@@ -16,3 +16,4 @@
 - [x] Quick add-to-bag, delivery-date estimate, share, recently viewed, back-to-top, saved-to-wishlist notices
 - [x] Cinematic scroll animations (parallax, headline unveil, card cascade), page fades, magnetic buttons, tilting photos
 - [x] Google sign-in for customers on the login and sign-up page
+- [x] Premium extras: search (⌘K), quick view, photo zoom, breadcrumbs, wear guide, sticky buy bar, bag pairings, product search listings
