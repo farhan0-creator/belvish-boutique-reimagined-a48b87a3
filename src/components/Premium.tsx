@@ -162,7 +162,7 @@ export function StickyBuyBar({ p, qty, target }: { p: Product; qty: number; targ
   useEffect(() => {
     const el = target.current;
     if (!el) return;
-    const io = new IntersectionObserver(([e]) => setShow(!e.isIntersecting && e.boundingClientRect.top < 0));
+    const io = new IntersectionObserver(([e]) => { if (e) setShow(!e.isIntersecting && e.boundingClientRect.top < 0); });
     io.observe(el);
     return () => io.disconnect();
   }, [target, p.slug]);

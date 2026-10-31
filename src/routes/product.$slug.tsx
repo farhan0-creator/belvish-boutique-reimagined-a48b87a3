@@ -66,7 +66,7 @@ function ProductPage() {
       <Crumbs p={p} />
       <div className="grid gap-12 md:grid-cols-2">
         <div>
-          <ZoomImage key={img} src={p.images[img]} alt={`${p.name} still life ${img + 1}`} />
+          <ZoomImage key={img} src={p.images[img] ?? p.images[0] ?? ""} alt={`${p.name} still life ${img + 1}`} />
           <div className="mt-4 grid grid-cols-3 gap-3">
             {p.images.map((src, i) => (
               <button key={i} onClick={() => setImg(i)} className={`overflow-hidden rounded-2xl border-2 ${i === img ? "border-primary" : "border-transparent"}`}>
