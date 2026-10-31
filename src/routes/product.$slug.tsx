@@ -1,5 +1,5 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Minus, Plus, Truck } from "lucide-react";
 import { formatINR, products } from "@/lib/catalog";
 import { useCart } from "@/lib/cart";
@@ -8,6 +8,7 @@ import { ShareButton, WishButton } from "@/components/Extras";
 import { addWorkingDays, useRecentlyViewed } from "@/lib/recent";
 import { whatsappLink } from "@/lib/contact";
 import { LuxeSeals, ScentPyramid } from "@/components/Luxe";
+import { Crumbs, ScentProfile, StickyBuyBar, ZoomImage } from "@/components/Premium";
 
 export const Route = createFileRoute("/product/$slug")({
   loader: ({ params }) => {
@@ -23,8 +24,22 @@ export const Route = createFileRoute("/product/$slug")({
           { property: "og:title", content: `${loaderData.name} — BELVISH` },
           { property: "og:description", content: loaderData.description },
           { property: "og:type", content: "product" },
+          { name: "twitter:card", content: "summary_large_image" },
         ]
       : [{ title: "Fragrance unavailable — BELVISH" }, { name: "robots", content: "noindex" }],
+    scripts: loaderData
+      ? [{
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Product",
+            name: loaderData.name,
+            brand: { "@type": "Brand", name: loaderData.house },
+            description: loaderData.description,
+            offers: { "@type": "Offer", priceCurrency: "INR", price: loaderData.price, availability: "https://schema.org/InStock" },
+          }),
+        }]
+      : [],
   }),
   component: ProductPage,
 });
@@ -36,6 +51,7 @@ function ProductPage() {
   const [qty, setQty] = useState(1);
   const recent = useRecentlyViewed(p.slug);
   const [eta, setEta] = useState("");
+  const buyRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const fmt = (d: Date) => d.toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" });
     const now = new Date();
@@ -47,9 +63,10 @@ function ProductPage() {
 
   return (
     <main className="mx-auto max-w-7xl px-6 py-12">
+      <Crumbs p={p} />
       <div className="grid gap-12 md:grid-cols-2">
         <div>
-          <img key={img} src={p.images[img]} alt={`${p.name} still life ${img + 1}`} className="aspect-[4/5] w-full rounded-[2rem] object-cover" />
+          <ZoomImage key={img} src={p.images[img]} alt={`${p.name} still life ${img + 1}`} />
           <div className="mt-4 grid grid-cols-3 gap-3">
             {p.images.map((src, i) => (
               <button key={i} onClick={() => setImg(i)} className={`overflow-hidden rounded-2xl border-2 ${i === img ? "border-primary" : "border-transparent"}`}>
@@ -70,7 +87,7 @@ function ProductPage() {
             <div><dt className="text-muted-foreground">Volume</dt><dd className="mt-1 font-medium">{p.volume}</dd></div>
             <div><dt className="text-muted-foreground">Price</dt><dd className="mt-1 font-medium">{formatINR(p.price)}</dd></div>
           </dl>
-          <div className="mt-8 flex gap-4">
+          <div ref={buyRef} className="mt-8 flex gap-4">
             <div className="flex items-center gap-4 rounded-full border border-border px-5">
               <button onClick={() => setQty(Math.max(1, qty - 1))} aria-label="Decrease"><Minus className="h-4 w-4" /></button>
               <span>{qty}</span>
@@ -88,6 +105,7 @@ function ProductPage() {
           <div className="mt-3"><ShareButton title={`${p.name} — BELVISH`} /></div>
           <a href={whatsappLink(`Hi BELVISH, I have a question about ${p.name} (${p.volume}).`)} target="_blank" rel="noopener noreferrer" className="mt-3 inline-block text-xs uppercase tracking-[0.2em] text-accent underline underline-offset-8">Ask about this fragrance on WhatsApp</a>
           <ScentPyramid notes={p.notes} />
+          <ScentProfile p={p} />
           <LuxeSeals />
           <div className="mt-8 rounded-3xl bg-secondary p-6">
             <p className="font-display text-xl">Wear it your way</p>
@@ -107,6 +125,7 @@ function ProductPage() {
           <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">{recent.map((x) => <ProductCard key={x.slug} p={x} />)}</div>
         </section>
       )}
+      <StickyBuyBar p={p} qty={qty} target={buyRef} />
     </main>
   );
 }
