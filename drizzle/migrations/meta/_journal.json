@@ -29,6 +29,13 @@
       "when": 1793394022573,
       "tag": "0003_store_settings_grants",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1793454666682,
+      "tag": "0004_store_popup_ad",
+      "breakpoints": true
     }
   ]
 }

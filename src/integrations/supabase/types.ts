@@ -128,6 +128,14 @@ export type Database = {
           announcement_link: string
           announcement_text: string
           id: number
+          popup_button_link: string
+          popup_button_text: string
+          popup_delay_seconds: number
+          popup_enabled: boolean
+          popup_frequency: string
+          popup_image_url: string
+          popup_text: string
+          popup_title: string
           promo_code: string
           promo_enabled: boolean
           promo_text: string
@@ -138,6 +146,14 @@ export type Database = {
           announcement_link?: string
           announcement_text?: string
           id?: number
+          popup_button_link?: string
+          popup_button_text?: string
+          popup_delay_seconds?: number
+          popup_enabled?: boolean
+          popup_frequency?: string
+          popup_image_url?: string
+          popup_text?: string
+          popup_title?: string
           promo_code?: string
           promo_enabled?: boolean
           promo_text?: string
@@ -148,6 +164,14 @@ export type Database = {
           announcement_link?: string
           announcement_text?: string
           id?: number
+          popup_button_link?: string
+          popup_button_text?: string
+          popup_delay_seconds?: number
+          popup_enabled?: boolean
+          popup_frequency?: string
+          popup_image_url?: string
+          popup_text?: string
+          popup_title?: string
           promo_code?: string
           promo_enabled?: boolean
           promo_text?: string
