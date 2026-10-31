@@ -2,7 +2,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
+import { Eye, ImagePlus, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
 import { formatINR } from "@/lib/catalog";
@@ -17,6 +17,9 @@ import {
   type StoreSettingsInput,
 } from "@/lib/admin.functions";
 import { useStoreSettings } from "@/components/Shell";
+import { PopupCard } from "@/components/PopupAd";
+import { supabase } from "@/integrations/supabase/client";
+import { POPUP_BUCKET } from "@/lib/store-settings.functions";
 import { STATUS_LABEL, readItems } from "@/components/OrderProgress";
 
 const card = "rounded-[2rem] border border-border bg-card p-8";
@@ -147,6 +150,8 @@ function OrdersTable() {
   );
 }
 
+type TextKey = "announcement_text" | "announcement_link" | "promo_text" | "promo_code" | "popup_title" | "popup_text" | "popup_image_url" | "popup_button_text" | "popup_button_link";
+
 function MarketingManager() {
   const current = useStoreSettings();
   const router = useRouter();
@@ -154,12 +159,35 @@ function MarketingManager() {
   const [form, setForm] = useState<StoreSettingsInput>(current);
   const [errors, setErrors] = useState<Partial<Record<keyof StoreSettingsInput, string>>>({});
   const [busy, setBusy] = useState(false);
-  useEffect(() => { setForm(current); }, [current]);
+  const [uploading, setUploading] = useState(false);
+  const [localImage, setLocalImage] = useState("");
+  const [preview, setPreview] = useState(false);
+  useEffect(() => { setForm(current); setLocalImage(""); }, [current]);
 
-  const text = (k: "announcement_text" | "announcement_link" | "promo_text" | "promo_code") => (e: { target: { value: string } }) => {
+  const text = (k: TextKey) => (e: { target: { value: string } }) => {
     setForm((f) => ({ ...f, [k]: e.target.value }));
     if (errors[k]) setErrors((er) => ({ ...er, [k]: undefined }));
   };
+
+  const imageSrc = localImage
+    || (form.popup_image_url === current.popup_image_url ? current.popup_image_src : "")
+    || (/^https:\/\/\S+$/i.test(form.popup_image_url) ? form.popup_image_url : "");
+
+  async function upload(file: File | undefined) {
+    if (!file) return;
+    if (!/^image\/(jpeg|png|webp|gif)$/.test(file.type)) { toast.error("Please choose a JPG, PNG, WebP or GIF image."); return; }
+    if (file.size > 5 * 1024 * 1024) { toast.error("Please choose an image under 5 MB."); return; }
+    setUploading(true);
+    const ext = file.name.split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
+    const name = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+    const { error } = await supabase.storage.from(POPUP_BUCKET).upload(name, file, { contentType: file.type });
+    setUploading(false);
+    if (error) { toast.error("Couldn't upload the image. Please try again."); return; }
+    setLocalImage(URL.createObjectURL(file));
+    setForm((f) => ({ ...f, popup_image_url: `${POPUP_BUCKET}/${name}` }));
+    setErrors((er) => ({ ...er, popup_image_url: undefined }));
+    toast.success("Image uploaded. Save changes to publish it.");
+  }
 
   async function submit(e: FormEvent) {
     e.preventDefault();
@@ -173,7 +201,7 @@ function MarketingManager() {
     setBusy(true);
     try {
       await save({ data: parsed.data });
-      toast.success("Announcement and promo saved.");
+      toast.success("Marketing settings saved.");
       await router.invalidate();
     } catch {
       toast.error("Couldn't save. Please try again.");
@@ -182,11 +210,19 @@ function MarketingManager() {
     }
   }
 
-  const input = (k: "announcement_text" | "announcement_link" | "promo_text" | "promo_code", label: string, props: React.InputHTMLAttributes<HTMLInputElement> = {}) => (
+  const label = "text-xs uppercase tracking-[0.2em] text-muted-foreground";
+  const err = (k: keyof StoreSettingsInput) => errors[k] && <span className="mt-1 block text-xs text-destructive">{errors[k]}</span>;
+  const input = (k: TextKey, title: string, props: React.InputHTMLAttributes<HTMLInputElement> = {}) => (
     <label className="block">
-      <span className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{label}</span>
+      <span className={label}>{title}</span>
       <input value={form[k]} onChange={text(k)} className="field-lux mt-2" aria-invalid={!!errors[k]} {...props} />
-      {errors[k] && <span className="mt-1 block text-xs text-destructive">{errors[k]}</span>}
+      {err(k)}
+    </label>
+  );
+  const toggle = (k: "announcement_enabled" | "promo_enabled" | "popup_enabled", aria: string) => (
+    <label className="flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-muted-foreground">
+      {form[k] ? "On" : "Off"}
+      <Switch checked={form[k]} onCheckedChange={(v) => { setForm((f) => ({ ...f, [k]: v })); setErrors((er) => ({ ...er, popup_title: undefined })); }} aria-label={aria} />
     </label>
   );
 
@@ -197,10 +233,7 @@ function MarketingManager() {
         <div className="space-y-5">
           <div className="flex items-center justify-between gap-4">
             <p className="text-sm uppercase tracking-[0.2em] text-accent">Announcement bar</p>
-            <label className="flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-muted-foreground">
-              {form.announcement_enabled ? "On" : "Off"}
-              <Switch checked={form.announcement_enabled} onCheckedChange={(v) => setForm((f) => ({ ...f, announcement_enabled: v }))} aria-label="Show announcement bar" />
-            </label>
+            {toggle("announcement_enabled", "Show announcement bar")}
           </div>
           {input("announcement_text", "Message", { maxLength: 200 })}
           {input("announcement_link", "Link (optional)", { maxLength: 300, placeholder: "/shop or https://…" })}
@@ -208,16 +241,67 @@ function MarketingManager() {
         <div className="space-y-5">
           <div className="flex items-center justify-between gap-4">
             <p className="text-sm uppercase tracking-[0.2em] text-accent">Promotional banner</p>
-            <label className="flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-muted-foreground">
-              {form.promo_enabled ? "On" : "Off"}
-              <Switch checked={form.promo_enabled} onCheckedChange={(v) => setForm((f) => ({ ...f, promo_enabled: v }))} aria-label="Show promotional banner" />
-            </label>
+            {toggle("promo_enabled", "Show promotional banner")}
           </div>
           {input("promo_text", "Banner text", { maxLength: 200, placeholder: "Festive edit — 10% off every extrait" })}
           {input("promo_code", "Coupon code (optional)", { maxLength: 40, placeholder: "FESTIVE10" })}
           <p className="text-xs text-muted-foreground">The banner appears on the home page and The Edit.</p>
         </div>
-        <button type="submit" disabled={busy} className="btn-gold w-full">{busy ? <Loader2 className="h-4 w-4 animate-spin" /> : "Save changes"}</button>
+        <div className="space-y-5">
+          <div className="flex items-center justify-between gap-4">
+            <p className="text-sm uppercase tracking-[0.2em] text-accent">Pop-up ad</p>
+            {toggle("popup_enabled", "Show pop-up ad")}
+          </div>
+          {input("popup_title", "Headline", { maxLength: 80, placeholder: "The Diwali edit has arrived" })}
+          <label className="block">
+            <span className={label}>Message (optional)</span>
+            <textarea value={form.popup_text} onChange={text("popup_text")} maxLength={300} rows={3} className="field-lux mt-2" placeholder="Complimentary gift wrap and a hand-written note on every order this week." aria-invalid={!!errors.popup_text} />
+            {err("popup_text")}
+          </label>
+          <div>
+            <span className={label}>Image (optional)</span>
+            <div className="mt-2 flex flex-wrap items-center gap-4">
+              {imageSrc && <img src={imageSrc} alt="Pop-up image preview" className="h-20 w-20 rounded-2xl object-cover" />}
+              <label className="btn-ghost-gold cursor-pointer !px-5 !py-2 text-xs">
+                {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImagePlus className="h-4 w-4" />} {form.popup_image_url ? "Replace image" : "Upload image"}
+                <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" className="sr-only" disabled={uploading} onChange={(e) => { void upload(e.target.files?.[0]); e.target.value = ""; }} />
+              </label>
+              {form.popup_image_url && (
+                <button type="button" onClick={() => { setForm((f) => ({ ...f, popup_image_url: "" })); setLocalImage(""); }} className="text-xs uppercase tracking-[0.2em] text-muted-foreground underline underline-offset-4 hover:text-destructive">Remove</button>
+              )}
+            </div>
+            <p className="mt-2 text-xs text-muted-foreground">JPG, PNG, WebP or GIF, up to 5 MB. Wide images look best.</p>
+            {err("popup_image_url")}
+          </div>
+          <div className="grid gap-5 sm:grid-cols-2">
+            {input("popup_button_text", "Button text (optional)", { maxLength: 30, placeholder: "Shop the edit" })}
+            {input("popup_button_link", "Button link", { maxLength: 300, placeholder: "/shop or https://…" })}
+          </div>
+          <div className="grid gap-5 sm:grid-cols-2">
+            <label className="block">
+              <span className={label}>Show after (seconds)</span>
+              <input type="number" min={0} max={60} step={1} value={form.popup_delay_seconds} onChange={(e) => setForm((f) => ({ ...f, popup_delay_seconds: e.target.value === "" ? 0 : Number(e.target.value) }))} className="field-lux mt-2" aria-invalid={!!errors.popup_delay_seconds} />
+              {err("popup_delay_seconds")}
+            </label>
+            <label className="block">
+              <span className={label}>How often</span>
+              <select value={form.popup_frequency} onChange={(e) => setForm((f) => ({ ...f, popup_frequency: e.target.value as "once" | "visit" }))} className="field-lux mt-2">
+                <option value="once">Once per visitor</option>
+                <option value="visit">Once every visit</option>
+              </select>
+            </label>
+          </div>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <p className="text-xs text-muted-foreground">Shows on every page except checkout and sign-in. Editing the ad shows it again to everyone.</p>
+            <button type="button" onClick={() => setPreview(true)} disabled={!form.popup_title && !form.popup_text && !imageSrc} className="btn-ghost-gold !px-5 !py-2 text-xs"><Eye className="h-4 w-4" /> Preview</button>
+          </div>
+          <PopupCard
+            open={preview}
+            onOpenChange={setPreview}
+            content={{ title: form.popup_title, text: form.popup_text, imageSrc, buttonText: form.popup_button_text, buttonLink: form.popup_button_link }}
+          />
+        </div>
+        <button type="submit" disabled={busy || uploading} className="btn-gold w-full">{busy ? <Loader2 className="h-4 w-4 animate-spin" /> : "Save changes"}</button>
       </form>
     </section>
   );
