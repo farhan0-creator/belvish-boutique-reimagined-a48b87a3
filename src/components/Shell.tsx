@@ -7,6 +7,7 @@ import { formatINR, type Product } from "@/lib/catalog";
 import { CONTACT, whatsappLink } from "@/lib/contact";
 import { Newsletter, WishButton } from "@/components/Extras";
 import { useAuth } from '@/lib/auth';
+import { CompleteRitual, QuickView, SearchPalette } from "@/components/Premium";
 import { Button } from '@/components/ui/button';
 import { DEFAULT_STORE_SETTINGS, safeAnnouncementHref } from "@/lib/store-settings.functions";
 
@@ -79,6 +80,7 @@ export function Header() {
               {user ? <Button variant="link" size="sm" asChild><Link to="/account">Account</Link></Button> : <><Button variant="link" size="sm" asChild><Link to="/auth" search={{ signup: false }}>Login</Link></Button><Button variant="link" size="sm" asChild><Link to="/auth" search={{ signup: true }}>Sign up</Link></Button></>}
             </div>
             <Button variant="link" size="sm" asChild className="lg:hidden"><Link to={user ? '/account' : '/auth'} search={user ? {} : { signup: false }} aria-label={user ? 'Account' : 'Login'}>{user ? 'Account' : 'Login'}</Link></Button>
+            <SearchPalette />
             <WishlistLink />
             <button onClick={() => setOpen(true)} className="relative flex items-center gap-2 text-xs uppercase tracking-[0.2em]" aria-label="Open bag">
               <ShoppingBag className="h-5 w-5" /> <span className="hidden sm:inline">Bag</span>
@@ -208,6 +210,7 @@ export function CartDrawer() {
               <p className="text-sm">{formatINR(l.product.price * l.qty)}</p>
             </div>
           ))}
+          <CompleteRitual inBag={lines.map((l) => l.product)} />
         </div>
         {lines.length > 0 && (
           <div className="border-t border-border px-6 py-5">
@@ -225,7 +228,8 @@ export function CartDrawer() {
 export function ProductCard({ p }: { p: Product }) {
   const { add } = useCart();
   return (
-    <Link to="/product/$slug" params={{ slug: p.slug }} className="group block">
+    <div className="group relative">
+    <Link to="/product/$slug" params={{ slug: p.slug }} className="block">
       <div className="lux-shine relative aspect-[4/5] overflow-hidden rounded-[2rem] bg-muted">
         <img src={p.images[0]} alt={`${p.name} by ${p.house}`} loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
         {p.isNew && <span className="absolute left-3 top-3 rounded-full bg-background px-3 py-1 text-[10px] uppercase tracking-widest">New</span>}
@@ -237,6 +241,8 @@ export function ProductCard({ p }: { p: Product }) {
       <p className="text-sm text-muted-foreground">{p.tags.join(" · ")}</p>
       <p className="mt-1 text-sm">{formatINR(p.price)}</p>
     </Link>
+    <QuickView p={p} />
+    </div>
   );
 }
 
