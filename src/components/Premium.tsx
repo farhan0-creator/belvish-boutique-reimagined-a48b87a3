@@ -67,7 +67,7 @@ export function QuickView({ p }: { p: Product }) {
   const stop = (e: MouseEvent) => { e.preventDefault(); e.stopPropagation(); };
   return (
     <>
-      <button type="button" onClick={(e) => { stop(e); setOpen(true); }} aria-label={`Quick view ${p.name}`} className="absolute left-3 top-14 grid h-10 w-10 place-items-center rounded-full bg-background/80 backdrop-blur transition-all duration-500 hover:text-accent md:translate-x-[-6px] md:opacity-0 md:group-hover:translate-x-0 md:group-hover:opacity-100">
+      <button type="button" onClick={(e) => { stop(e); setOpen(true); }} aria-label={`Quick view ${p.name}`} className="absolute right-3 top-16 grid h-10 w-10 place-items-center rounded-full bg-background/80 backdrop-blur transition-all duration-500 hover:text-accent md:translate-x-[6px] md:opacity-0 md:group-hover:translate-x-0 md:group-hover:opacity-100">
         <Eye className="h-4 w-4" />
       </button>
       <Dialog open={open} onOpenChange={setOpen}>
