@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import type { Database } from "@/integrations/supabase/types";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { isValidPopupImage } from "@/lib/store-settings.functions";
 
 /** Admin order row — everything the dashboard needs in one payload. */
 export type AdminOrder = Database["public"]["Tables"]["orders"]["Row"];
@@ -181,6 +182,17 @@ export const storeSettingsSchema = z.object({
   promo_enabled: z.boolean(),
   promo_text: z.string().trim().max(200, "Keep it under 200 characters"),
   promo_code: z.string().trim().max(40, "Keep it under 40 characters"),
+  popup_enabled: z.boolean(),
+  popup_title: z.string().trim().max(80, "Keep it under 80 characters"),
+  popup_text: z.string().trim().max(300, "Keep it under 300 characters"),
+  popup_image_url: z.string().trim().max(500).refine(isValidPopupImage, "Upload an image or use a full https:// link"),
+  popup_button_text: z.string().trim().max(30, "Keep it under 30 characters"),
+  popup_button_link: linkSchema,
+  popup_delay_seconds: z.number().int("Whole seconds only").min(0, "0 to 60 seconds").max(60, "0 to 60 seconds"),
+  popup_frequency: z.enum(["once", "visit"]),
+}).refine((s) => !s.popup_enabled || s.popup_title !== "" || s.popup_text !== "" || s.popup_image_url !== "", {
+  message: "Add a title, message or image before switching the pop-up on",
+  path: ["popup_title"],
 });
 export type StoreSettingsInput = z.infer<typeof storeSettingsSchema>;
 
