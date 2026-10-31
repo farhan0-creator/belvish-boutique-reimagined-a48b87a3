@@ -157,7 +157,7 @@ function MarketingManager() {
   const router = useRouter();
   const save = useServerFn(updateStoreSettings);
   const [form, setForm] = useState<StoreSettingsInput>(current);
-  const [errors, setErrors] = useState<Partial<Record<keyof StoreSettingsInput, string>>>({});
+  const [errors, setErrors] = useState<Partial<Record<keyof StoreSettingsInput, string | undefined>>>({});
   const [busy, setBusy] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [localImage, setLocalImage] = useState("");
@@ -193,7 +193,7 @@ function MarketingManager() {
     e.preventDefault();
     const parsed = storeSettingsSchema.safeParse(form);
     if (!parsed.success) {
-      const errs: Partial<Record<keyof StoreSettingsInput, string>> = {};
+      const errs: Partial<Record<keyof StoreSettingsInput, string | undefined>> = {};
       for (const issue of parsed.error.issues) errs[issue.path[0] as keyof StoreSettingsInput] ??= issue.message;
       setErrors(errs);
       return;
