@@ -36,6 +36,13 @@
       "when": 1793454666682,
       "tag": "0004_store_popup_ad",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1793454699227,
+      "tag": "0005_popup_images_admin_read",
+      "breakpoints": true
     }
   ]
 }
