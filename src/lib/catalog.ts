@@ -1,3 +1,4 @@
+import { assetUrl } from "@/lib/asset-url";
 import heroAsset from "@/assets/hero-fragrance.jpg.asset.json";
 import amberAsset from "@/assets/bottle-amber.jpg.asset.json";
 import bloomAsset from "@/assets/journal-bloom.jpg.asset.json";
@@ -8,15 +9,15 @@ import figAsset from "@/assets/p-fig.jpg.asset.json";
 import irisAsset from "@/assets/p-iris.jpg.asset.json";
 import vanillaAsset from "@/assets/p-vanilla.jpg.asset.json";
 
-const hero = heroAsset.url;
-const amber = amberAsset.url;
-const bloom = bloomAsset.url;
-const noir = noirAsset.url;
-const rose = roseAsset.url;
-const oud = oudAsset.url;
-const fig = figAsset.url;
-const iris = irisAsset.url;
-const vanilla = vanillaAsset.url;
+const hero = assetUrl(heroAsset);
+const amber = assetUrl(amberAsset);
+const bloom = assetUrl(bloomAsset);
+const noir = assetUrl(noirAsset);
+const rose = assetUrl(roseAsset);
+const oud = assetUrl(oudAsset);
+const fig = assetUrl(figAsset);
+const iris = assetUrl(irisAsset);
+const vanilla = assetUrl(vanillaAsset);
 
 export type Family = "Fresh" | "Citrus" | "Woody" | "Floral" | "Amber" | "Gourmand" | "Musky";
 export type Occasion = "Everyday" | "Work" | "A bright day" | "An evening out";
