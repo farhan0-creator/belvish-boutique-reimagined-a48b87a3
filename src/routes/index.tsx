@@ -11,10 +11,11 @@ import atelierVideoAsset from "@/assets/belvish-atelier-move.mp4.asset.json";
 import { families, houses, products } from "@/lib/catalog";
 import { Eyebrow, ProductCard, PromiseStrip, PromoBanner } from "@/components/Shell";
 import { Finder } from "@/components/Finder";
+import { assetUrl } from "@/lib/asset-url";
 
-const hero = heroAsset.url;
-const heroVideo = heroVideoAsset.url;
-const bloom = bloomAsset.url;
+const hero = assetUrl(heroAsset);
+const heroVideo = assetUrl(heroVideoAsset);
+const bloom = assetUrl(bloomAsset);
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -125,7 +126,7 @@ function Home() {
 
       {/* Atelier story */}
       <section className="relative mx-3 mt-24 overflow-hidden rounded-[2.5rem] md:mx-6">
-        <video src={atelierVideoAsset.url} autoPlay muted loop playsInline poster={atelier} aria-hidden="true" ref={(v) => { if (v) v.muted = true; }} className="absolute inset-0 h-full w-full object-cover" />
+        <video src={assetUrl(atelierVideoAsset)} autoPlay muted loop playsInline poster={atelier} aria-hidden="true" ref={(v) => { if (v) v.muted = true; }} className="absolute inset-0 h-full w-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-r from-background via-background/85 to-background/20" />
         <div className="relative mx-auto max-w-7xl px-6 py-32">
           <div className="max-w-xl">
