@@ -10,7 +10,7 @@
 <!-- LOVABLE:END -->
 
 - Catalog data is static in `src/lib/catalog.ts`; the bag is browser-local. Checkout is Cash on Delivery: `placeCodOrder` (src/lib/orders.functions.ts) re-prices lines server-side via `order-pricing.ts` and inserts into `public.orders` (anon INSERT-only RLS, no public reads) — never trust client totals.
-- Images and videos use `.asset.json` pointers owned by this project; pointers copied from another project do not resolve, so re-upload media instead of copying pointers.
+- Images and videos use `.asset.json` pointers owned by this project; pointers copied from another project do not resolve, so re-upload media instead of copying pointers. Always read pointer URLs through `assetUrl()` (src/lib/asset-url.ts): builds on non-Lovable hosts (Vercel/Netlify, or `ASSET_ORIGIN`) get the Lovable origin injected by vite.config.ts, because only Lovable hosting serves `/__l5e/` paths.
 - Contact details live only in `src/lib/contact.ts`; import from there instead of hardcoding.
 - Order tracking uses the SECURITY DEFINER RPC `track_order(order_number, phone)` so orders stay unreadable to the public; newsletter signups are anon INSERT-only.
 - Accounts use Cloud Auth with one root session subscriber; protected pages live under the managed `_authenticated` layout. Profile ownership and separate immutable-to-customers role records are enforced by RLS, so browser state cannot grant privileges.
